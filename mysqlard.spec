@@ -18,7 +18,6 @@ BuildRequires:	apache-base >= 2.0.54
 BuildRequires:	mysql-devel
 BuildRequires:	rrdtool
 BuildRequires:	librrdtool-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 mysqlard daemon collects MySQL(TM) performance data in a Round Robin Database.
