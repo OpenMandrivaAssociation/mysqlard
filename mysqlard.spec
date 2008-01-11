@@ -108,16 +108,6 @@ convert src/mysql.gif -resize 32x32 %{buildroot}%{_iconsdir}/%{name}.png
 convert src/mysql.gif -resize 48x48 %{buildroot}%{_liconsdir}/%{name}.png
 
 # install menu entry.
-install -d %{buildroot}%{_menudir}
-cat > %{buildroot}%{_menudir}/%{name} << EOF
-?package(%{name}): needs=X11 \
-section="System/Monitoring" \
-title="mysqlard" \
-longtitle="mysqlard is a MySQL performance logging daemon." \
-command="%{_bindir}/www-browser http://localhost/%{name}/" \
-icon="%{name}.png" \
-xdg=true
-EOF
 
 # XDG menu
 install -d %{buildroot}%{_datadir}/applications
@@ -161,7 +151,6 @@ EOF
 %dir /var/run/%{name}
 %{_mandir}/man1/*
 %{_mandir}/man8/*
-%{_menudir}/%{name}
 %{_iconsdir}/%{name}.png
 %{_miconsdir}/%{name}.png
 %{_liconsdir}/%{name}.png
