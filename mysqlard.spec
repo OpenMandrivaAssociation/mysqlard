@@ -129,6 +129,8 @@ EOF
 
 %preun
 %_preun_service %{name}
+
+%postun
 %_postun_webapp
 %clean_menus
 
