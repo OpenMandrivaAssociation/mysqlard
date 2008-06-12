@@ -125,14 +125,18 @@ EOF
 %post
 %_post_service %{name}
 %_post_webapp
+%if %mdkversion < 200900
 %update_menus
+%endif
 
 %preun
 %_preun_service %{name}
 
 %postun
 %_postun_webapp
+%if %mdkversion < 200900
 %clean_menus
+%endif
 
 %clean
 [ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
