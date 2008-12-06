@@ -13,12 +13,11 @@ Requires(pre):	apache-mod_php php-mysql
 Requires:	apache-mod_php php-mysql
 Requires:	mysql
 Requires:	rrdtool
-BuildRequires:	ImageMagick
 BuildRequires:	apache-base >= 2.0.54
 BuildRequires:	mysql-devel
 BuildRequires:	rrdtool
-BuildRequires:	librrdtool-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+BuildRequires:	rrdtool-devel
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 mysqlard daemon collects MySQL(TM) performance data in a Round Robin Database.
@@ -98,48 +97,18 @@ Alias /%{name} /var/lib/%{name}
 
 EOF
 
-# Mandriva Icons
-install -d %{buildroot}%{_iconsdir}
-install -d %{buildroot}%{_miconsdir}
-install -d %{buildroot}%{_liconsdir}
-
-convert src/mysql.gif -resize 16x16 %{buildroot}%{_miconsdir}/%{name}.png
-convert src/mysql.gif -resize 32x32 %{buildroot}%{_iconsdir}/%{name}.png
-convert src/mysql.gif -resize 48x48 %{buildroot}%{_liconsdir}/%{name}.png
-
-# install menu entry.
-
-# XDG menu
-install -d %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}.desktop << EOF
-[Desktop Entry]
-Name=mysqlard
-Comment=%{summary}
-Exec="%{_bindir}/www-browser http://localhost/%{name}/"
-Icon=%{name}
-Terminal=false
-Type=Application
-Categories=X-MandrivaLinux-MoreApplications-Databases;
-EOF
-
 %post
 %_post_service %{name}
 %_post_webapp
-%if %mdkversion < 200900
-%update_menus
-%endif
 
 %preun
 %_preun_service %{name}
 
 %postun
 %_postun_webapp
-%if %mdkversion < 200900
-%clean_menus
-%endif
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(0755,root,root)
@@ -157,7 +126,3 @@ EOF
 %dir /var/run/%{name}
 %{_mandir}/man1/*
 %{_mandir}/man8/*
-%{_iconsdir}/%{name}.png
-%{_miconsdir}/%{name}.png
-%{_liconsdir}/%{name}.png
-%{_datadir}/applications/*.desktop
