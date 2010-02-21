@@ -1,30 +1,31 @@
 Summary:	MySQL performance logging daemon
 Name:		mysqlard
 Version:	1.0.0
-Release:	%mkrel 11
+Release:	%mkrel 12
 Group:		System/Servers
 License:	GPL
 URL:		http://gert.sos.be/en/
 Source0:	http://www.sos.be/projects/%{name}/dist/%{name}-%{version}.tar.bz2
 Patch0:		mysqlard-1.0.0-mdv_conf.diff
-Requires(post): rpm-helper
-Requires(preun): rpm-helper
-Requires(pre):	apache-mod_php php-mysql
-Requires:	apache-mod_php php-mysql
+Requires:	apache-mod_php
+Requires:	php-mysql
 Requires:	mysql
 Requires:	rrdtool
-BuildRequires:	apache-base >= 2.0.54
+Requires(post):   rpm-helper
+Requires(preun):   rpm-helper
+%if %mdkversion < 201010
+Requires(postun):   rpm-helper
+%endif
 BuildRequires:	mysql-devel
 BuildRequires:	rrdtool
 BuildRequires:	rrdtool-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 mysqlard daemon collects MySQL(TM) performance data in a Round Robin Database.
 The package also contains example graphing and php scripts.
 
 %prep
-
 %setup -q
 %patch0 -p0
 
@@ -82,39 +83,33 @@ cat > %{buildroot}/%{_sysconfdir}/httpd/conf/webapps.d/%{name}.conf << EOF
 Alias /%{name} /var/lib/%{name}
 
 <Directory /var/lib/%{name}>
-    Order Deny,Allow
-    Deny from All
-    Allow from 127.0.0.1
-    ErrorDocument 403 "Access denied per %{_sysconfdir}/httpd/conf/webapps.d/%{name}.conf"
+    Order allow,deny
+    Allow from all
 </Directory>
-
-#<LocationMatch /%{name}>
-#    Options FollowSymLinks
-#    RewriteEngine on
-#    RewriteCond %{SERVER_PORT} !^443$
-#    RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [L,R]
-#</LocationMatch>
-
 EOF
 
 %post
 %_post_service %{name}
+%if %mdkversion < 201010
 %_post_webapp
+%endif
 
 %preun
 %_preun_service %{name}
 
 %postun
+%if %mdkversion < 201010
 %_postun_webapp
+%endif
 
 %clean
 rm -rf %{buildroot}
 
 %files
-%defattr(0755,root,root)
+%defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING INSTALL NEWS README TODO
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/*.cnf
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/httpd/conf/webapps.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf/webapps.d/%{name}.conf
 %attr(0755,root,root) %{_initrddir}/mysqlard
 %attr(0755,root,root) %{_sysconfdir}/cron.d/%{name}
 %attr(0755,root,root) %{_sysconfdir}/cron.daily/%{name}
