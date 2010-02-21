@@ -44,9 +44,6 @@ chmod 644 AUTHORS ChangeLog COPYING INSTALL NEWS README TODO
 %install
 rm -rf %{buildroot}
 
-# don't fiddle with the initscript!
-export DONT_GPRINTIFY=1
-
 %makeinstall_std
 
 install -d %{buildroot}%{_initrddir}
