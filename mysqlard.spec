@@ -1,7 +1,7 @@
 Summary:	MySQL performance logging daemon
 Name:		mysqlard
 Version:	1.0.0
-Release:	%mkrel 12
+Release:	%mkrel 13
 Group:		System/Servers
 License:	GPL
 URL:		http://gert.sos.be/en/
@@ -68,8 +68,6 @@ mv %{buildroot}/var/lib/%{name}/mysqlar.monthly %{buildroot}%{_sysconfdir}/cron.
 mv %{buildroot}/var/lib/%{name}/mysqlar.php %{buildroot}/var/lib/%{name}/index.php
 
 cat > %{name}.crond << EOF
-#!/bin/sh
-
 */5 * * * * root hourly=1 daily=1 weekly=1 monthly=1 %{_bindir}/mysqlar_graph > /dev/null
 EOF
 
