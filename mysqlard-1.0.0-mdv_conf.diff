@@ -1,0 +1,118 @@
+--- src/mysqlard.server.sh	2006-02-04 13:42:11.000000000 +0100
++++ src/mysqlard.server.sh.oden	2006-05-13 16:41:31.000000000 +0200
+@@ -7,15 +7,17 @@
+ #
+ #  Copyright 2004 Gert Dewit <gert.dewit@sos.be>
+ #
+-# chkconfig: - 79 11
++# chkconfig: 2345 79 11
+ # description: MySQL Activity Report Daemon
+ # processname: mysqlard
+ # config: @sysconfdir@/mysqlard.cnf
+-# pidfile: /var/run/mysqlard.pid
++# pidfile: @pidfile@
++
++# Source function library.
++. /etc/rc.d/init.d/functions
+ 
+ # Source the config script
+ if [[ "$datadir" == "" ]] ; then
+-	echo Loading defaultsettings
+ 	. @sysconfdir@/mysqlard.cnf
+ fi
+ 
+@@ -41,6 +43,11 @@
+ queryfile=${queryfile:="${datadir}/queries.rrd"}
+ slavefile=${slavefile:="${datadir}/slave.rrd"}
+ 
++# Source configuration.
++if [ -f /etc/sysconfig/mysqlard ]; then
++    . /etc/sysconfig/mysqlard
++fi
++
+ slaveopt=
+ if [[ "$slave" != "" ]]; then
+   slaveopt=-L
+@@ -148,34 +155,57 @@
+ fi
+ }
+ 
+-status() {
+-if [ -f $pidfile ]
+-then
+-  echo $0 is running. PID `cat ${pidfile}`
+-else
+-  echo $0 is not running. 
+-fi
++RETVAL=0
+ 
++start() {
++        echo -n "Starting mysqlard"
++	initrrd
++	${MYSQLARD} \
++	    --step=${step} \
++	    --datadir=${datadir} \
++	    --user=${MYSQLUSER} $MYSQLHOST \
++	    --pidfile=${pidfile} ${slaveopt} 2>/dev/null 1>&2 && success || failure
++        RETVAL=$?
++	echo
++        [ $RETVAL = 0 ] && touch /var/lock/subsys/mysqlard
++        return $RETVAL
++}
++stop() {
++	echo -n "Stopping mysqlard"
++	killproc mysqlard
++	RETVAL=$?
++	echo
++	[ $RETVAL = 0 ] && rm -f /var/lock/subsys/mysqlard ${pidfile}
+ }
+ 
++# See how we were called.
+ case "$1" in
+-	start)
+-		initrrd
+-		${MYSQLARD} --step=${step} --datadir=${datadir} --user=${MYSQLUSER} $MYSQLHOST --pidfile=${pidfile} ${slaveopt}
+-	;;
+-	stop)
+-		kill `cat ${pidfile}`
+-		rm -f ${pidfile}
+-	;;
+-	initrrd)
+-		initrrd
+-	;;
+-	status)
+-		status
+-	;;
+-	*)
+-		echo "Usage: $0 {start|stop|status|initrrd}"
+-		exit 1
++  start)
++	start
++	;;
++  stop)
++	stop
++	;;
++  initrrd)
++	initrrd
++	;;
++  status)
++        status mysqlard
++	RETVAL=$?
++	;;
++  restart|reload)
++	stop
++	start
++	;;
++  condrestart)
++	if [ -f ${pidfile} ] ; then
++	    stop
++	    start
++	fi
++	;;
++  *)
++	echo -n "Usage: $0 {start|stop|initrrd|status|restart|condrestart|reload}"
++	exit 1
+ esac
+ 
+-exit $?
++exit $RETVAL
