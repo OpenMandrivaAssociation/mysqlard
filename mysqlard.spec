@@ -1,7 +1,7 @@
 Summary:	MySQL performance logging daemon
 Name:		mysqlard
 Version:	1.0.0
-Release:	18
+Release:	19
 Group:		System/Servers
 License:	GPL
 URL:		http://gert.sos.be/en/
