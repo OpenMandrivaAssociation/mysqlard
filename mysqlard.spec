@@ -1,7 +1,7 @@
 Summary:	MySQL performance logging daemon
 Name:		mysqlard
 Version:	1.0.0
-Release:	%mkrel 17
+Release:	18
 Group:		System/Servers
 License:	GPL
 URL:		http://gert.sos.be/en/
@@ -92,10 +92,6 @@ EOF
 %preun
 %_preun_service %{name}
 
-%postun
-%if %mdkversion < 201010
-%_postun_webapp
-%endif
 
 %clean
 rm -rf %{buildroot}
