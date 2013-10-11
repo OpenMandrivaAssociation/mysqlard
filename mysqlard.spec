@@ -78,8 +78,7 @@ cat > %{buildroot}/%{_sysconfdir}/httpd/conf/webapps.d/%{name}.conf << EOF
 Alias /%{name} /var/lib/%{name}
 
 <Directory /var/lib/%{name}>
-    Order allow,deny
-    Allow from all
+    Require all granted
 </Directory>
 EOF
 
