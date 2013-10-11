@@ -1,7 +1,7 @@
 Summary:	MySQL performance logging daemon
 Name:		mysqlard
 Version:	1.0.0
-Release:	19
+Release:	20
 Group:		System/Servers
 License:	GPL
 URL:		http://gert.sos.be/en/
@@ -13,13 +13,9 @@ Requires:	mysql
 Requires:	rrdtool
 Requires(post):   rpm-helper
 Requires(preun):   rpm-helper
-%if %mdkversion < 201010
-Requires(postun):   rpm-helper
-%endif
 BuildRequires:	mysql-devel
 BuildRequires:	rrdtool
 BuildRequires:	rrdtool-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 mysqlard daemon collects MySQL(TM) performance data in a Round Robin Database.
@@ -42,8 +38,6 @@ chmod 644 AUTHORS ChangeLog COPYING INSTALL NEWS README TODO
 %make
 
 %install
-rm -rf %{buildroot}
-
 %makeinstall_std
 
 install -d %{buildroot}%{_initrddir}
@@ -84,19 +78,13 @@ EOF
 
 %post
 %_post_service %{name}
-%if %mdkversion < 201010
-%_post_webapp
-%endif
 
 %preun
 %_preun_service %{name}
 
-
 %clean
-rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING INSTALL NEWS README TODO
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/%{name}/*.cnf
 %config(noreplace) %{_sysconfdir}/httpd/conf/webapps.d/%{name}.conf
@@ -112,85 +100,3 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 %{_mandir}/man8/*
 
-
-%changelog
-* Thu Mar 17 2011 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-17mdv2011.0
-+ Revision: 645844
-- relink against libmysqlclient.so.18
-
-* Sat Jan 01 2011 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-16mdv2011.0
-+ Revision: 627261
-- rebuilt against mysql-5.5.8 libs, again
-
-* Thu Dec 30 2010 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-15mdv2011.0
-+ Revision: 626543
-- rebuilt against mysql-5.5.8 libs
-
-* Thu Oct 21 2010 Nicolas Lécureuil <nlecureuil@mandriva.com> 1.0.0-13mdv2011.0
-+ Revision: 587174
-- Do not add shebang in cron.d file
-  CCBUG: 57855
-
-* Sun Feb 21 2010 Guillaume Rousse <guillomovitch@mandriva.org> 1.0.0-12mdv2010.1
-+ Revision: 509216
-- no need to prevent initscript translation
-- rely on filetrigger for reloading apache configuration begining with 2010.1, rpm-helper macros otherwise
-
-* Thu Feb 18 2010 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-11mdv2010.1
-+ Revision: 507491
-- rebuild
-
-* Mon Sep 14 2009 Thierry Vignaud <tv@mandriva.org> 1.0.0-10mdv2010.0
-+ Revision: 440176
-- rebuild
-
-* Sat Dec 06 2008 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-9mdv2009.1
-+ Revision: 311410
-- fix deps
-- spec file cleanup
-- rebuilt against mysql-5.1.30 libs
-
-* Tue Jun 17 2008 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-8mdv2009.0
-+ Revision: 222499
-- rebuilt against new rrdtool-devel
-
-  + Pixel <pixel@mandriva.com>
-    - rpm filetriggers deprecates update_menus/update_scrollkeeper/update_mime_database/update_icon_cache/update_desktop_database/post_install_gconf_schemas
-    - %clean_menus and %%_postun_webapp must be in %%postun, not %%preun
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - drop old menu
-    - kill re-definition of %%buildroot on Pixel's request
-
-  + Olivier Blin <oblin@mandriva.com>
-    - restore BuildRoot
-
-* Tue Aug 07 2007 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-7mdv2008.0
-+ Revision: 59816
-- Import mysqlard
-
-
-
-* Tue Aug 07 2007 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-7mdv2008.0
-- use the www-browser command instead of constructed one
-- xdg cleanups
-
-* Mon Sep 04 2006 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-6mdv2007.0
-- fix xdg menu
-
-* Mon Sep 04 2006 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-5mdv2007.0
-- rebuilt against MySQL-5.0.24a-1mdv2007.0 due to ABI changes
-
-* Sun May 14 2006 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-4mdk
-- fix a menuentry
-- add mod_rewrite rules to enforce ssl connections
-- fix deps
-
-* Sat May 13 2006 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-3mdk
-- fix a better initscript (P0)
-
-* Fri May 05 2006 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-2mdk
-- fix the cron syntax
-
-* Wed May 03 2006 Oden Eriksson <oeriksson@mandriva.com> 1.0.0-1mdk
-- initial Mandriva package
