@@ -4,7 +4,7 @@ Version:	1.0.0
 Release:	21
 Group:		System/Servers
 License:	GPL
-URL:		http://gert.sos.be/en/
+URL:		https://gert.sos.be/en/
 Source0:	http://www.sos.be/projects/%{name}/dist/%{name}-%{version}.tar.bz2
 Patch0:		mysqlard-1.0.0-mdv_conf.diff
 Requires:	apache-mod_php
